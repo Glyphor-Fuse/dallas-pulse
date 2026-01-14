@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOCTURNE | Dallas Premier Nightlife</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Manrope:wght@200;400;600&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --text: #f0f0f0;
+            --accent: #ff3c00;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --font-head: 'Italiana', serif;
+            --font-display: 'Syncopate', sans-serif;
+            --font-body: 'Manrope', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            cursor: none;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Grain Overlay */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.05;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 1px solid var(--text);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 10000;
+            transition: transform 0.1s ease, background 0.2s ease;
+            mix-blend-mode: difference;
+        }
+
+        a:hover ~ .cursor, button:hover ~ .cursor {
+            transform: scale(3);
+            background: var(--text);
+            border-color: transparent;
+        }
+
+        /* Typography Utility */
+        .h-xl {
+            font-family: var(--font-display);
+            font-size: clamp(3rem, 10vw, 12rem);
+            line-height: 0.9;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            background: linear-gradient(to right, #fff, #888);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .h-lg {
+            font-family: var(--font-head);
+            font-size: clamp(2.5rem, 5vw, 6rem);
+            line-height: 1.1;
+        }
+
+        .h-md {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        /* Layout */
+        .container {
+            width: 90%;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            mix-blend-mode: difference;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .menu-btn {
+            font-family: var(--font-body);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.8rem;
+        }
+
+        /* Hero Section */
+        header.hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+            transform: scale(1.1);
+            animation: panZoom 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes panZoom {
+            from { transform: scale(1.1) translate(0, 0); }
+            to { transform: scale(1.2) translate(-20px, -20px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .hero-sub {
+            font-family: var(--font-body);
+            font-weight: 200;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: block;
+            opacity: 0;
+            animation: fadeIn 1s ease 0.5s forwards;
+        }
+
+        /* Environments */
+        .zones {
+            padding: 10rem 0;
+            position: relative;
+        }
+
+        .grid-zones {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2rem;
+            margin-top: 5rem;
+        }
+
+        .zone-card {
+            grid-column: span 6;
+            position: relative;
+            height: 60vh;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: border-color 0.3s ease;
+        }
+        
+        .zone-card:nth-child(even) {
+            transform: translateY(5rem);
+        }
+        
+        .zone-card:nth-child(3) {
+            grid-column: span 12;
+            height: 80vh;
+        }
+
+        .zone-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+            filter: grayscale(100%) contrast(120%);
+        }
+
+        .zone-card:hover .zone-img {
+            transform: scale(1.05);
+            filter: grayscale(0%) contrast(100%);
+        }
+
+        .zone-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem;
+            background: linear-gradient(to top, #000, transparent);
+            pointer-events: none;
+        }
+
+        .zone-title {
+            font-family: var(--font-head);
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .zone-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            max-width: 300px;
+        }
+
+        /* Schedule */
+        .lineup {
+            padding: 5rem 0 10rem;
+            background: #080808;
+        }
+
+        .schedule-list {
+            margin-top: 4rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .event-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            padding: 2.5rem 0;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            align-items: center;
+        }
+
+        .event-row:hover {
+            background: var(--glass);
+            padding-left: 2rem;
+        }
+
+        .event-date {
+            font-family: var(--font-display);
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .event-artist {
+            font-family: var(--font-head);
+            font-size: 3rem;
+        }
+
+        .event-genre {
+            text-align: right;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            opacity: 0.6;
+        }
+
+        /* The Bar */
+        .bar-section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+
+        .bar-bg {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            mask-image: linear-gradient(to right, transparent, black);
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 100%);
+        }
+
+        .bar-content {
+            position: relative;
+            z-index: 2;
+            width: 50%;
+            padding-left: 10vw;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .cta-btn {
+            background: transparent;
+            color: var(--text);
+            border: 1px solid var(--text);
+            padding: 1.5rem 4rem;
+            font-family: var(--font-display);
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            margin-top: 3rem;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .cta-btn:hover {
+            background: var(--text);
+            color: var(--bg);
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .h-xl { font-size: 4rem; }
+            .h-lg { font-size: 2.5rem; }
+            .grid-zones {
+                display: flex;
+                flex-direction: column;
+            }
+            .zone-card, .zone-card:nth-child(even), .zone-card:nth-child(3) {
+                grid-column: span 12;
+                transform: none;
+                height: 50vh;
+                margin-bottom: 2rem;
+            }
+            .bar-section {
+                flex-direction: column;
+                height: auto;
+                padding-bottom: 4rem;
+            }
+            .bar-bg { width: 100%; height: 50vh; position: relative; mask-image: none; }
+            .bar-content { width: 100%; padding: 2rem; }
+            .event-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+                text-align: center;
+            }
+            .event-genre { text-align: center; }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="cursor" id="cursor"></div>
+
+    <nav>
+        <div class="logo">NOCTURNE.</div>
+        <div class="menu-btn">Dallas, TX</div>
+    </nav>
+
+    <header class="hero">
+        <img src="https://images.unsplash.com/photo-1574391884720-38501869d27a?q=80&w=2067&auto=format&fit=crop" alt="Nightclub Crowd" class="hero-bg">
+        <div class="hero-content">
+            <span class="hero-sub">Welcome to the Abyss</span>
+            <h1 class="h-xl">The Pulse<br>of Dallas</h1>
+        </div>
+    </header>
+
+    <section class="zones container">
+        <h2 class="h-md">Sonic Landscapes</h2>
+        <h3 class="h-lg">Five Realms.<br>One Destination.</h3>
+        
+        <div class="grid-zones">
+            <!-- Zone 1 -->
+            <div class="zone-card">
+                <img src="https://images.unsplash.com/photo-1598518141948-24cc40c83226?q=80&w=2070&auto=format&fit=crop" alt="Techno" class="zone-img">
+                <div class="zone-info">
+                    <div class="zone-title">The Void</div>
+                    <p class="zone-desc">Industrial Techno & Deep House. Immersive lasers and bass that stops your heart.</p>
+                </div>
+            </div>
+            
+            <!-- Zone 2 -->
+            <div class="zone-card">
+                <img src="https://images.unsplash.com/photo-1571266028243-371695039353?q=80&w=2070&auto=format&fit=crop" alt="Lounge" class="zone-img">
+                <div class="zone-info">
+                    <div class="zone-title">Velvet Room</div>
+                    <p class="zone-desc">R&B, Soul & Downtempo. A plush sanctuary for conversation and connection.</p>
+                </div>
+            </div>
+
+            <!-- Zone 3 -->
+            <div class="zone-card">
+                <img src="https://images.unsplash.com/photo-1514525253440-b393452e8d26?q=80&w=1974&auto=format&fit=crop" alt="Main Stage" class="zone-img">
+                <div class="zone-info">
+                    <div class="zone-title">The Cathedral</div>
+                    <p class="zone-desc">Main Stage Energy. Top 40, EDM, and High-Octane Performance Art.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="lineup">
+        <div class="container">
+            <h2 class="h-md">Upcoming Rituals</h2>
+            <div class="schedule-list">
+                <div class="event-row">
+                    <span class="event-date">FRI OCT 14</span>
+                    <span class="event-artist">SOLOMUN</span>
+                    <span class="event-genre">Deep House</span>
+                </div>
+                <div class="event-row">
+                    <span class="event-date">SAT OCT 15</span>
+                    <span class="event-artist">AMELIE LENS</span>
+                    <span class="event-genre">Techno</span>
+                </div>
+                <div class="event-row">
+                    <span class="event-date">FRI OCT 21</span>
+                    <span class="event-artist">BLACK COFFEE</span>
+                    <span class="event-genre">Afro House</span>
+                </div>
+                <div class="event-row">
+                    <span class="event-date">SAT OCT 22</span>
+                    <span class="event-artist">ZHU</span>
+                    <span class="event-genre">Electronic</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="bar-section">
+        <img src="https://images.unsplash.com/photo-1556679343-c7306c1976bc?q=80&w=1964&auto=format&fit=crop" alt="Cocktail" class="bar-bg">
+        <div class="bar-content">
+            <h2 class="h-md">Alchemy & Spirits</h2>
+            <h3 class="h-lg" style="margin: 1rem 0 2rem;">Liquid<br>Artistry</h3>
+            <p style="font-size: 1.1rem; opacity: 0.7; line-height: 1.8; max-width: 500px;">
+                Experience mixology elevated to an art form. Our expansive onyx bar features rare spirits, molecular cocktails, and a wine list curated by the world's finest sommeliers. Taste the night.
+            </p>
+            <a href="#" class="cta-btn">View Menu</a>
+        </div>
+    </section>
+
+    <footer>
+        <h2 class="h-xl" style="font-size: 5vw;">Join The Night</h2>
+        <p style="margin-top: 2rem; letter-spacing: 0.1em; text-transform: uppercase;">1900 Pacific Ave, Dallas, TX</p>
+        <a href="#" class="cta-btn">Reserve Table</a>
+    </footer>
+
+    <script>
+        const cursor = document.getElementById('cursor');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Simple Parallax Effect on Scroll
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.zone-img');
+            
+            parallaxElements.forEach(el => {
+                const speed = 0.1;
+                el.style.transform = `translateY(${scrolled * speed}px) scale(1.1)`;
+            });
+        });
+    </script>
+
+<script>
+  let inspectorMode = false;
+  let hoveredElement = null;
+  let selectedElement = null;
+  
+  window.addEventListener('message', (event) => {
+    if (event.data?.type === 'SET_INSPECTOR_MODE') {
+      inspectorMode = event.data.enabled;
+      document.body.style.cursor = inspectorMode ? 'crosshair' : 'default';
+    }
+    
+    if (event.data?.type === 'LOCAL_UPDATE' && selectedElement) {
+      const update = event.data.update;
+      
+      if (update.text !== undefined) {
+        selectedElement.innerText = update.text;
+      }
+      
+      if (update.styles) {
+        Object.entries(update.styles).forEach(([prop, value]) => {
+          selectedElement.style[prop] = value;
+        });
+      }
+    }
+  });
+  
+  document.addEventListener('mouseover', (e) => {
+    if (!inspectorMode) return;
+    if (hoveredElement && hoveredElement !== selectedElement) {
+      hoveredElement.style.outline = '';
+    }
+    hoveredElement = e.target;
+    if (hoveredElement !== selectedElement) {
+      hoveredElement.style.outline = '2px solid #06b6d4';
+    }
+  });
+  
+  document.addEventListener('mouseout', (e) => {
+    if (!inspectorMode || !hoveredElement) return;
+    if (hoveredElement !== selectedElement) {
+      hoveredElement.style.outline = '';
+    }
+  });
+  
+  document.addEventListener('click', (e) => {
+    if (!inspectorMode) return;
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (selectedElement) {
+      selectedElement.style.outline = '';
+    }
+    
+    const el = e.target;
+    selectedElement = el;
+    el.style.outline = '3px solid #06b6d4';
+    
+    const rect = el.getBoundingClientRect();
+    const styles = window.getComputedStyle(el);
+    
+    window.parent.postMessage({
+      type: 'ELEMENT_SELECTED',
+      element: {
+        tagName: el.tagName.toLowerCase(),
+        text: el.innerText?.substring(0, 500) || '',
+        className: el.className || '',
+        styles: {
+          color: styles.color,
+          backgroundColor: styles.backgroundColor,
+          fontSize: styles.fontSize,
+          fontWeight: styles.fontWeight,
+          padding: styles.padding,
+          margin: styles.margin,
+        },
+        rect: {
+          top: rect.top,
+          left: rect.left,
+          width: rect.width,
+          height: rect.height,
+        },
+        selector: el.id ? '#' + el.id : (el.className ? '.' + el.className.split(' ')[0] : el.tagName.toLowerCase())
+      }
+    }, '*');
+  }, true);
+</script>
+</body>
+</html>
